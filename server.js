@@ -31,9 +31,19 @@ app.use(express.json());
 // Add these endpoints to your server.js
 
 // OAuth flow initiation - redirects to Strava
+// OAuth flow initiation - redirects to Strava
 app.get('/auth/strava', function(req, res) {
   const clientId = process.env.STRAVA_CLIENT_ID;
   const redirectUri = process.env.STRAVA_REDIRECT_URI;
+  
+  // Check if required env vars exist
+  if (!clientId || !redirectUri) {
+    return res.status(500).json({ 
+      error: 'Missing Strava configuration',
+      clientId: !!clientId,
+      redirectUri: !!redirectUri
+    });
+  }
   
   const authUrl = `https://www.strava.com/oauth/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&approval_prompt=auto&scope=activity:read_all`;
   
@@ -266,4 +276,10 @@ app.use(function(err, req, res, next) {
 
 app.listen(PORT, function() {
   console.log('Strava proxy server running on port ' + PORT);
+  console.log('Environment check:');
+  console.log('- STRAVA_CLIENT_ID:', !!process.env.STRAVA_CLIENT_ID);
+  console.log('- STRAVA_CLIENT_SECRET:', !!process.env.STRAVA_CLIENT_SECRET);
+  console.log('- STRAVA_REDIRECT_URI:', !!process.env.STRAVA_REDIRECT_URI);
+  console.log('- FRONTEND_URL:', !!process.env.FRONTEND_URL);
+  console.log('- ANTHROPIC_API_KEY:', !!process.env.ANTHROPIC_API_KEY);
 });
