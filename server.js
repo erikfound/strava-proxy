@@ -21,6 +21,11 @@ app.use(cors({
   credentials: true
 }));
 
+// Simple root endpoint for Railway health checks
+app.get('/', function(req, res) {
+  res.json({ status: 'ok', message: 'Strava proxy server is running' });
+});
+
 app.use(express.json());
 
 // Add these endpoints to your server.js
@@ -209,7 +214,7 @@ app.get('/api/strava/activities/:id', function(req, res) {
 });
 
 app.get('/health', function(req, res) {
-  res.json({ status: 'ok' });
+  res.status(200).json({ status: 'ok' });
 });
 
 app.post('/api/claude/analyze', function(req, res) {
