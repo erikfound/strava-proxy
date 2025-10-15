@@ -17,15 +17,7 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(o => o && origin && origin.includes(o))) {
-      callback(null, true);
-    } else {
-      callback(null, true);
-    }
-  },
+  origin: true, // Allow all origins for now
   credentials: true
 }));
 
@@ -253,6 +245,18 @@ app.post('/api/claude/analyze', function(req, res) {
     console.error('Claude API error:', error);
     res.status(500).json({ error: 'Failed to get AI analysis: ' + error.message });
   });
+});
+
+// Add request timeout
+app.use(function(req, res, next) {
+  req.setTimeout(30000); // 30 seconds
+  next();
+});
+
+// Error handling middleware
+app.use(function(err, req, res, next) {
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Internal server error' });
 });
 
 app.listen(PORT, function() {
